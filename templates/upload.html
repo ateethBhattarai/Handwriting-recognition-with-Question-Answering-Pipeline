@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Upload • PDF | Image Q&A</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>PDF & Image Q&A</h1>
+        <p class="subtitle">Upload PDF or image.</p>
+      </header>
+
+      {% if error %}
+      <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <main class="card">
+        <h2>Upload File</h2>
+        <form
+          action="{{ url_for('pdf.upload_file') }}"
+          method="post"
+          enctype="multipart/form-data"
+          class="form"
+        >
+          <input
+            type="file"
+            name="files"
+            accept=".pdf,.png,.jpg,.jpeg"
+            multiple
+            required
+          />
+          <button class="btn" type="submit">Upload & Build Q&A</button>
+        </form>
+        <p class="hint">Supported: PDF, PNG, JPG, JPEG.</p>
+      </main>
+
+      <footer class="footer">
+        <span
+          >Powered by Flask · LangChain · Ollama · Chroma · OpenCV · Tesseract
+          <br />
+          Created by: Ateeth Bhattarai
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

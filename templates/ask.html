@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ask • PDF & Image Q&A</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>Ask Questions</h1>
+        <a class="link" href="{{ url_for('pdf.upload_file') }}"
+          >&larr; Upload another batch</a
+        >
+      </header>
+
+      <main class="card">
+        <div class="qa">
+          <form method="POST" class="qa-form">
+            <input
+              class="input"
+              name="question"
+              type="text"
+              placeholder="Type your question..."
+              value="{{ question or '' }}"
+              required
+            />
+            <button class="btn" type="submit">Ask</button>
+          </form>
+
+          {% if answer %}
+          <div class="answer-card">
+            <h3>Answer</h3>
+            <p>{{ answer|safe }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </main>
+
+      <footer class="footer">
+        <span
+          >Tip: Ask for summaries, definitions, or specific details mentioned in
+          your upload.</span
+        >
+      </footer>
+    </div>
+  </body>
+</html>
