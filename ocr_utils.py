@@ -3,6 +3,8 @@ import cv2
 import pytesseract
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+import time
+
 
 IMAGE_EXTS = (".png", ".jpg", ".jpeg")
 
@@ -10,6 +12,7 @@ IMAGE_EXTS = (".png", ".jpg", ".jpeg")
 def is_image_filename(name: str) -> bool:
     return name.lower().endswith(IMAGE_EXTS)
 
+start_time = time.time()
 
 def preprocess_image(image_path: str):
     """Preprocess for OCR: grayscale, binarize, denoise."""
@@ -30,6 +33,10 @@ def ocr_image_to_text(image_path: str) -> str:
     if processed is None:
         return ""
     text = pytesseract.image_to_string(processed)
+    print("The image contained:\n")
+    print(text)
+    print("---The pdf generation took %.3f seconds ---" % (time.time() - start_time))
+
     return text or ""
 
 

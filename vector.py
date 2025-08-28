@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import fitz
 from typing import List, Tuple, Dict
 from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
@@ -8,7 +8,7 @@ from langchain_chroma import Chroma
 DB_DIR = "./chroma_langchain_db"
 os.makedirs(DB_DIR, exist_ok=True)
 
-# Initialize embeddings once (requires Ollama running and model present)
+# Initialize embeddings
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 
