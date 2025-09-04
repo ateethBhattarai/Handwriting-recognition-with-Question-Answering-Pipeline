@@ -15,7 +15,7 @@ def is_image_filename(name: str) -> bool:
 start_time = time.time()
 
 def preprocess_image(image_path: str):
-    """Preprocess for OCR: grayscale, binarize, denoise."""
+    # OCR image pre-process: grayscale, binarization, denoise
     img = cv2.imread(image_path)
     if img is None:
         return None
@@ -28,7 +28,7 @@ def preprocess_image(image_path: str):
 
 
 def ocr_image_to_text(image_path: str) -> str:
-    """Run OCR on a single image file after preprocessing."""
+    # Running OCR on a image file after pre-processing
     processed = preprocess_image(image_path)
     if processed is None:
         return ""
@@ -41,7 +41,7 @@ def ocr_image_to_text(image_path: str) -> str:
 
 
 def save_text_as_pdf(text: str, output_pdf_path: str):
-    """Create a simple text-only PDF containing the OCR/extracted text."""
+    # PDF creation from extracted text
     os.makedirs(os.path.dirname(output_pdf_path), exist_ok=True)
     c = canvas.Canvas(output_pdf_path, pagesize=letter)
     width, height = letter

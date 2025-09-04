@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import time
 
 start_time = time.time()
-# Initialize the LLM once (Ollama must be running)
+# LLM Initialization
 model = OllamaLLM(model="llama3.2")
 
 template = """
