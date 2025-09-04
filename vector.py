@@ -4,44 +4,45 @@ from typing import List, Tuple, Dict
 from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
+from metrics import timer, log_metric  # NEW
 
 DB_DIR = "./chroma_langchain_db"
 os.makedirs(DB_DIR, exist_ok=True)
 
-# Initialize embeddings
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-
 def extract_text_from_pdf(pdf_path: str) -> str:
-    text = ""
-    with fitz.open(pdf_path) as doc:
-        for page in doc:
-            text += page.get_text()
+    with timer("pdf_extract", {"doc_id": os.path.basename(pdf_path)}):
+        text = ""
+        with fitz.open(pdf_path) as doc:
+            for page in doc:
+                text += page.get_text()
+    log_metric("pdf_chars", len(text), {"doc_id": os.path.basename(pdf_path)})
     return text
-
 
 def build_vector_store_from_texts(
     collection_id: str,
     texts_with_meta: List[Tuple[str, Dict]],
 ):
-    """
-    Create a new Chroma collection for this upload batch and add documents.
-    texts_with_meta: list of (text, metadata)
-    """
     collection_name = f"kb_{collection_id}"
-    docs = [Document(page_content=t, metadata=m) for (t, m) in texts_with_meta]
 
-    # Create a new collection (Chroma wrapper auto-persists with persist_directory)
-    _ = Chroma.from_documents(
-        documents=docs,
-        embedding=embeddings,
-        collection_name=collection_name,
-        persist_directory=DB_DIR,
-    )
+    # Tag chunks with stable IDs for eval
+    docs: List[Document] = []
+    for i, (t, m) in enumerate(texts_with_meta):
+        meta = dict(m)
+        meta["doc_id"] = f"{collection_id}-{i}"
+        docs.append(Document(page_content=t, metadata=meta))
 
+    with timer("embed_ingest", {"doc_id": collection_name}):
+        _ = Chroma.from_documents(
+            documents=docs,
+            embedding=embeddings,
+            collection_name=collection_name,
+            persist_directory=DB_DIR,
+        )
+    log_metric("embed_docs_count", len(docs), {"doc_id": collection_name})
 
 def get_retriever(collection_id: str, k: int = 5):
-    """Load retriever for an existing collection."""
     collection_name = f"kb_{collection_id}"
     store = Chroma(
         collection_name=collection_name,

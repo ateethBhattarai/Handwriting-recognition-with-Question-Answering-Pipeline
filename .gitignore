@@ -104,3 +104,10 @@ secrets.json
 
 # Chroma DB (LangChain)
 chroma_langchain_db/
+
+# metrics log file
+metrics_log.csv
+
+# processed and uploads files
+uploads/*
+processed/*
