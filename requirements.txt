@@ -11,3 +11,4 @@ langchain-ollama
 langchain-chroma
 chromadb
 reportlab
+Levenshtein

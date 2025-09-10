@@ -1,11 +1,9 @@
-# metrics.py
 import time
 import csv
 import os
 from contextlib import contextmanager
 from difflib import SequenceMatcher
 
-# Optional: faster edit distance if installed
 try:
     import Levenshtein
     _HAS_LEV = True
@@ -16,7 +14,7 @@ METRICS_CSV = os.environ.get("METRICS_CSV", "./metrics_log.csv")
 
 @contextmanager
 def timer(stage: str, extra: dict | None = None):
-    """Context manager to time code blocks in milliseconds."""
+    # Context manager to time code blocks in milliseconds.
     t0 = time.perf_counter()
     try:
         yield
@@ -25,7 +23,7 @@ def timer(stage: str, extra: dict | None = None):
         log_metric("latency_ms", round(dur_ms, 3), {"stage": stage, **(extra or {})})
 
 def log_metric(metric: str, value, extra: dict | None = None):
-    """Append a metric row to CSV (ts, metric, value, stage, doc_id, user_q, notes)."""
+    # Append a metric row to CSV with headers
     headers = ["ts", "metric", "value", "stage", "doc_id", "user_q", "notes"]
     row = {
         "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -43,22 +41,21 @@ def log_metric(metric: str, value, extra: dict | None = None):
             w.writeheader()
         w.writerow(row)
 
-# --- Optional accuracy utilities ---
 
 def _lev(a: str, b: str) -> int:
     if _HAS_LEV:
         return Levenshtein.distance(a, b)
-    # Fallback via similarity ratio (approximation of edit distance)
+    # Fallback via similarity ratio 
     return int(round((1 - SequenceMatcher(None, a, b).ratio()) * max(len(a), len(b))))
 
 def cer(pred: str, truth: str) -> float:
-    """Character Error Rate."""
+    # Character Error Rate
     if not truth:
         return 0.0
     return _lev(pred, truth) / len(truth)
 
 def wer(pred: str, truth: str) -> float:
-    """Word Error Rate (rough)."""
+    # Word Error Rate
     pw, tw = pred.split(), truth.split()
     if not tw:
         return 0.0
@@ -66,7 +63,7 @@ def wer(pred: str, truth: str) -> float:
         return Levenshtein.distance(" ".join(pw), " ".join(tw)) / len(tw)
     return int(round((1 - SequenceMatcher(None, pw, tw).ratio()) * max(len(pw), len(tw)))) / max(1, len(tw))
 
-# Retrieval-quality helpers (use offline with a small labeled set)
+# Retrieval-quality helpers 
 def precision_at_k(relevant_ids: set[str], retrieved_ids: list[str], k: int) -> float:
     if k <= 0: return 0.0
     topk = retrieved_ids[:k]
