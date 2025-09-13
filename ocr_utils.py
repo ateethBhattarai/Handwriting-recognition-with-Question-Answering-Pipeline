@@ -3,7 +3,7 @@ import cv2
 import pytesseract
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from metrics import timer, log_metric, cer, wer  # already imported in your file
+from metrics import timer, log_metric
 
 # Allowed image extensions
 ALLOWED_IMAGE_EXTENSIONS = {"png","jpg","jpeg"}
@@ -32,7 +32,6 @@ def ocr_image_to_text(image_path: str) -> str:
     with timer("ocr", {"doc_id": os.path.basename(image_path)}):
         text = pytesseract.image_to_string(processed) or ""
 
-    # OPTIONAL: collect word confidence stats
     try:
         data = pytesseract.image_to_data(processed, output_type=pytesseract.Output.DICT)
         conf_vals = [int(c) for c in data.get("conf", []) if c not in ("-1", None, "", "-")]

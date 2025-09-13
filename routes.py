@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from ocr_utils import ocr_image_to_text, save_text_as_pdf, is_image_filename
 from vector import extract_text_from_pdf, build_vector_store_from_texts, get_retriever
 from llm import ask_llm
-from metrics import timer, log_metric  # NEW
+from metrics import timer, log_metric
 
 pdf_bp = Blueprint("pdf", __name__)
 UPLOAD_DIR = "uploads"
@@ -87,7 +87,6 @@ def ask_page(collection_id: str):
                 docs = retriever.invoke(question)
 
             context = "\n\n".join([doc.page_content for doc in docs]) if docs else ""
-            # Keep retrieved IDs for offline retrieval metrics (optional)
             try:
                 retrieved_ids = [getattr(doc, "metadata", {}).get("doc_id", "") for doc in docs]
                 log_metric("retrieval_ids", "|".join(retrieved_ids), {"doc_id": collection_id, "user_q": question})
